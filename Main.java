@@ -26,25 +26,30 @@ public class Main {
         return array[rnd];
     }
 
+    static <T> T pickRandom(ArrayList<T> array) {
+        int rnd = generator.nextInt(array.size());
+        return array.get(rnd);
+    }
+
     static class World {
         ArrayList<Creature> creatures;
         ArrayList<Food> foods;
 
         public World() {
-            creatures = createCreature();
-            foods = spawnFood();
+            creatures = new ArrayList<Creature>();
+            foods = new ArrayList<Food>();
         }
 
-        public ArrayList<Creature> createCreature() {
-            ArrayList<Creature> temp = new ArrayList<Creature>(); // Messing around with this
+        public void createCreature() {
             for (int i = 0; i < 10; i++) {
-                temp.add(new Creature());
+                creatures.add(new Creature());
             }
-            return temp;
         }
 
         public void spawnFood() {
-
+            for (int i = 0; i < 10; i++) {
+                foods.add(new Food());
+            }
         }
 
     }
@@ -109,18 +114,17 @@ public class Main {
 
         generator = new Random();
 
-        Creature creature = new Creature();
-        Food food = new Food();
-
         World world = new World();
+        world.createCreature();
+        world.spawnFood();
 
         for (Creature n : world.creatures) {
-            System.out.println(creature.name + " " + creature.diet);
+            System.out.println(n.name + " " + n.diet + " " + n.gender);
 
         }
-
-        System.out.println(creature.name + " " + creature.diet + " " + creature.gender);
-        System.out.println(food.foodType + " " + food.name);
+        for (Food n : world.foods) {
+            System.out.println(n.foodType + " " + n.name);
+        }
 
     }
 }
