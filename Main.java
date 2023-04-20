@@ -2,36 +2,48 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.ArrayList;
 
+// main method that everything runs in
 public class Main {
 
+    // creates a random object
     static Random generator;
 
+    // array of names to assign to creatures **might change to take directly from
+    // file**
     static String[] names = { "Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Garcia",
             "Rodriguez", "Wilson", "Martinez", "Anderson", "Taylor", "Thomas", "Hernandez", "Moore", "Martin",
             "Jackson", "Thompson", "White", "Lopez", "Lee", "Gonzalez", "Harris", "Clark", "Lewis", "Robinson",
             "Walker", "Perez", "Hall", "Young", "Allen", "Sanchez", "Wright", "King", "Scott", "Green", "Baker",
             "Adams", "Nelson", "Hill", "Ramirez", "Campbell", "Mitchell", "Roberts", "Carter", };
 
+    // array to randomly assign a diet
     static String[] diets = { "Herbavore", "Carnavore" };
 
+    // array to randomly assign a food type
     static String[] foodTypes = { "Plant", "Bird" };
 
+    // array to randomly assign a gender
     static String[] genders = { "Male", "Female" };
 
+    // array to randomly assign a plant name
     static String[] plantNames = { "Berries", "Bushes" };
 
+    // array to randomly assign a bird name
     static String[] birdNames = { "Robin", "Blue Jay" };
 
+    // grabs a random item from an array
     static <T> T pickRandom(T[] array) {
         int rnd = generator.nextInt(array.length);
         return array[rnd];
     }
 
+    // grabs a random item from an array list
     static <T> T pickRandom(ArrayList<T> array) {
         int rnd = generator.nextInt(array.size());
         return array.get(rnd);
     }
 
+    // class that creates the world
     static class World {
         ArrayList<Carnivore> carnivores;
         ArrayList<Herbavore> herbavores;
@@ -42,6 +54,7 @@ public class Main {
         int numOfPlants = 0;
         int numOfBirds = 0;
 
+        // constructor to create a world
         public World() {
             carnivores = new ArrayList<Carnivore>();
             herbavores = new ArrayList<Herbavore>();
@@ -49,6 +62,7 @@ public class Main {
             birds = new ArrayList<Bird>();
         }
 
+        // method to create creatures based on random chances
         public void createCreature() {
             int chance = generator.nextInt(5);
             // 20% chance carnivore spawns
@@ -66,6 +80,7 @@ public class Main {
 
         }
 
+        // method to create food based on random chances
         public void spawnFood() {
             int chance = generator.nextInt(5);
             // 60% chance plant spawns
@@ -84,13 +99,16 @@ public class Main {
 
     }
 
+    // class that creates creatures
     static class Creature {
         String name = pickRandom(names);
         String diet = "diet";
         String gender = pickRandom(genders);
 
+        // method that randomly decides if an animal eats
         public boolean eat() {
             int chance = generator.nextInt(2);
+            // 50% chance to eat
             if (chance == 1) {
                 System.out.println(this.name + " ate food.");
                 return true;
@@ -98,15 +116,19 @@ public class Main {
             return false;
         }
 
+        // method to randomly decide if a creature dies
         public boolean die() {
             int chance = generator.nextInt(5);
             if (this.diet == "Carnivore") {
+                // 40% chance carnivore dies **carnivores can eat herbavores so they have a
+                // higher chance to die randomly**
                 if (chance == 1 || chance == 2) {
                     System.out.println(this.name + " died.");
                     return true;
                 }
             }
             if (chance == 1) {
+                // 20% chance herbavore dies
                 System.out.println(this.name + " died.");
                 return true;
             }
@@ -115,12 +137,15 @@ public class Main {
 
     }
 
+    // class creates carnivores
     static class Carnivore extends Creature {
 
+        // constructor to make a carnivore
         public Carnivore() {
             diet = "Carnivore";
         }
 
+        // method allows carnivores to reproduce
         public Carnivore cReproduce() {
             System.out.println(this.name + " reproduced");
             Carnivore temp = new Carnivore();
@@ -130,11 +155,15 @@ public class Main {
 
     }
 
+    // class creates herbavores
     static class Herbavore extends Creature {
+
+        // constructor for herbavores
         public Herbavore() {
             diet = "Herbavore";
         }
 
+        // method allows herbavores to reproduce
         public Herbavore hReproduce() {
             System.out.println(this.name + " reproduced");
             Herbavore temp = new Herbavore();
@@ -143,123 +172,154 @@ public class Main {
 
     }
 
+    // class to create food
     static class Food {
         String foodType = "foodType";
         String name = "name";
 
     }
 
+    // class to create plants
     static class Plant extends Food {
+
+        // constructor for plants
         public Plant() {
             name = pickRandom(plantNames);
             foodType = "Plant";
         }
     }
 
+    // class to create birds
     static class Bird extends Food {
+
+        // constructor to create birds
         public Bird() {
             name = pickRandom(birdNames);
             foodType = "Bird";
         }
     }
 
+    // Main method
     public static void main(String[] args) {
+        // scanner to allow user input
         Scanner in = new Scanner(System.in);
+
+        // create random object within main
         generator = new Random();
 
+        // create new world object
         World world = new World();
 
+        // instructions on possible inputs
         System.out.println("Continue? y/n");
 
-        // try {
-
+        // sets up loop
         boolean keepGoing = true;
         while (keepGoing) {
 
+            // display number of carnivores, herbavores, plants, and birds
             System.out.println("Carnivores: " + world.numOfCarnivores);
             System.out.println("Herbavores: " + world.numOfHerbavores);
             System.out.println("Plants: " + world.numOfPlants);
             System.out.println("Birds: " + world.numOfBirds);
             System.out.println();
+
+            // get user input
             String userInput = in.next();
+
             switch (userInput) {
+                // y runs one loop over the world where creatures are made, food is spawned and
+                // creatures have a chance to die, eat, reproduce
                 case "y":
                     world.createCreature();
                     world.spawnFood();
+                    // loops through so every herbavore has a chance to die, eat, reproduce
                     for (int i = 0; i < world.herbavores.size(); i++) {
-                        if (world.numOfPlants > 0) {
+                        if (world.numOfPlants > 0) { // only allows to eat if food is there
                             if (world.herbavores.get(i).eat() == true) {
-                                world.plants.remove(0);
-                                world.numOfPlants--;
+                                world.plants.remove(0); // removes a plant
+                                world.numOfPlants--; // decreases plant count
                             }
                         }
-                        int choose = generator.nextInt(5);
-                        if (world.herbavores.size() > 1) {
-                            if (choose == 1) {
+                        int choose = generator.nextInt(4);
+                        if (world.herbavores.size() > 1) { // reproduce chance if there are 2 herbavores
+                            if (choose == 1) { // 25% chance to reproduce
                                 Herbavore newCreature = world.herbavores.get(i).hReproduce();
-                                world.herbavores.add(newCreature);
-                                world.numOfHerbavores++;
+                                world.herbavores.add(newCreature); // new creature added
+                                world.numOfHerbavores++; // number increased
                             }
                         }
+                        // die is at end so the creature doesnt die and then try to eat or something
+                        // while looping through
                         if (world.herbavores.get(i).die() == true) {
-                            world.herbavores.remove(world.herbavores.get(i));
-                            world.numOfHerbavores--;
+                            world.herbavores.remove(world.herbavores.get(i)); // removes herbavore from arraylist
+                            world.numOfHerbavores--; // number decreased
                         }
                     }
+                    // loops through so every carnivore has a chance to die, eat, reproduce
                     for (int i = 0; i < world.carnivores.size(); i++) {
-                        if (world.numOfBirds > 0) {
+                        if (world.numOfBirds > 0) { // allows to eat if bird
                             int choose = generator.nextInt(3);
-                            if (choose == 0) {
+                            if (choose == 0) { // 33% chance to eat
                                 if (world.carnivores.get(i).eat() == true) {
-                                    world.birds.remove(0);
-                                    world.numOfBirds--;
+                                    world.birds.remove(0); // removes a bird
+                                    world.numOfBirds--; // number decreased
                                 }
                             }
-                            if (world.herbavores.size() > 9 && world.carnivores.size() < world.herbavores.size()) {
-                                if (choose == 1 || choose == 2 || choose == 3) {
-                                    if (world.carnivores.get(i).eat() == true) {
-                                        if (world.herbavores.size() > 0) {
-                                            world.herbavores.remove(0);
-                                            world.numOfHerbavores--;
-                                        }
+
+                        }
+                        // only allows to eat herbavore if there are 10 and the number of carnivores is
+                        // less than the herbavores
+                        if (world.herbavores.size() > 9 && world.carnivores.size() < world.herbavores.size()) {
+                            int choose = generator.nextInt(3);
+                            if (choose == 1 || choose == 2 || choose == 3) {
+                                if (world.carnivores.get(i).eat() == true) {
+                                    if (world.herbavores.size() > 0) { // only eat if herbavore exists
+                                        world.herbavores.remove(0); // removes a herbavore
+                                        world.numOfHerbavores--; // number decreased
                                     }
                                 }
                             }
                         }
                         int choose = generator.nextInt(4);
                         if (world.carnivores.size() > 1) {
-                            if (choose == 1) {
+                            if (choose == 1) { // 25% chance to reproduce
                                 Carnivore newCreature = world.carnivores.get(i).cReproduce();
-                                world.carnivores.add(newCreature);
-                                world.numOfCarnivores++;
+                                world.carnivores.add(newCreature); // creates new carnivore
+                                world.numOfCarnivores++; // number increased
                             }
                         }
                         if (world.carnivores.get(i).die() == true) {
-                            world.carnivores.remove(world.carnivores.get(i));
-                            world.numOfCarnivores--;
+                            world.carnivores.remove(world.carnivores.get(i)); // removes carnivore from world
+                            world.numOfCarnivores--; // number decreased
                         }
                     }
                     break;
                 case "n":
+                    // if n, loop stops
                     keepGoing = false;
                     break;
 
             }
-            System.out.println();
+            System.out.println(); // spacer for output
 
         }
 
+        // prints any carnivores in the world when loop stops
         for (Carnivore n : world.carnivores) {
             System.out.println(n.name + " " + n.diet + " " + n.gender);
 
         }
+        // prints any herbavores in the world when loop stops
         for (Herbavore n : world.herbavores) {
             System.out.println(n.name + " " + n.diet + " " + n.gender);
 
         }
+        // prints any plants in the world when loop stops
         for (Plant n : world.plants) {
             System.out.println(n.foodType + " " + n.name);
         }
+        // prints any birds in the world when loop stops
         for (Bird n : world.birds) {
             System.out.println(n.foodType + " " + n.name);
         }
