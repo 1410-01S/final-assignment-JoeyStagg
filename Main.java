@@ -1,6 +1,10 @@
 import java.util.Random;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.util.Locale;
 
 // main method that everything runs in
 public class Main {
@@ -10,11 +14,7 @@ public class Main {
 
     // array of names to assign to creatures **might change to take directly from
     // file**
-    static String[] names = { "Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Garcia",
-            "Rodriguez", "Wilson", "Martinez", "Anderson", "Taylor", "Thomas", "Hernandez", "Moore", "Martin",
-            "Jackson", "Thompson", "White", "Lopez", "Lee", "Gonzalez", "Harris", "Clark", "Lewis", "Robinson",
-            "Walker", "Perez", "Hall", "Young", "Allen", "Sanchez", "Wright", "King", "Scott", "Green", "Baker",
-            "Adams", "Nelson", "Hill", "Ramirez", "Campbell", "Mitchell", "Roberts", "Carter", };
+    static ArrayList<String> names = new ArrayList<>();
 
     // array to randomly assign a diet
     static String[] diets = { "Herbavore", "Carnavore" };
@@ -118,17 +118,10 @@ public class Main {
 
         // method to randomly decide if a creature dies
         public boolean die() {
-            int chance = generator.nextInt(5);
-            if (this.diet == "Carnivore") {
-                // 40% chance carnivore dies **carnivores can eat herbavores so they have a
-                // higher chance to die randomly**
-                if (chance == 1 || chance == 2) {
-                    System.out.println(this.name + " died.");
-                    return true;
-                }
-            }
+            int chance = generator.nextInt(4);
+            // 25% chance carnivore dies **carnivores can eat herbavores so they have a
+            // higher chance to die randomly**
             if (chance == 1) {
-                // 20% chance herbavore dies
                 System.out.println(this.name + " died.");
                 return true;
             }
@@ -200,12 +193,27 @@ public class Main {
     }
 
     // Main method
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         // scanner to allow user input
         Scanner in = new Scanner(System.in);
 
         // create random object within main
         generator = new Random();
+
+        Scanner s = null;
+
+        // populates names with names
+        try {
+            s = new Scanner(new BufferedReader(new FileReader("name.txt")));
+            s.useLocale(Locale.US);
+            s.useDelimiter("\",\"\\s*");
+
+            while (s.hasNext()) {
+                names.add(s.next());
+            }
+        } finally {
+            s.close();
+        }
 
         // create new world object
         World world = new World();
@@ -271,15 +279,13 @@ public class Main {
                         // only allows to eat herbavore if there are 10 and the number of carnivores is
                         // less than the herbavores
                         if (world.herbavores.size() > 9 && world.carnivores.size() < world.herbavores.size()) {
-                            int choose = generator.nextInt(3);
-                            if (choose == 1 || choose == 2 || choose == 3) {
-                                if (world.carnivores.get(i).eat() == true) {
-                                    if (world.herbavores.size() > 0) { // only eat if herbavore exists
-                                        world.herbavores.remove(0); // removes a herbavore
-                                        world.numOfHerbavores--; // number decreased
-                                    }
+                            if (world.carnivores.get(i).eat() == true) {
+                                if (world.herbavores.size() > 0) { // only eat if herbavore exists
+                                    world.herbavores.remove(0); // removes a herbavore
+                                    world.numOfHerbavores--; // number decreased
                                 }
                             }
+
                         }
                         int choose = generator.nextInt(4);
                         if (world.carnivores.size() > 1) {
